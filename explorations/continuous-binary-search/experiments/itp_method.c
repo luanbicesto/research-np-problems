@@ -34,11 +34,19 @@ cbs_result_t itp_search(
     double yb = f(b, params) - T;
     result.f_evals = 2;
 
-    /* Garantir ya < 0 < yb (swap se necessário) */
-    if (ya > 0.0) {
+    /* Garantir a < b */
+    if (a > b) {
         double tmp;
         tmp = a; a = b; b = tmp;
         tmp = ya; ya = yb; yb = tmp;
+    }
+
+    /* Garantir ya < 0 < yb. Se ya > 0, trocar sinais internamente. */
+    int negate = 0;
+    if (ya > 0.0) {
+        ya = -ya;
+        yb = -yb;
+        negate = 1;
     }
 
     /* Calcular n_half (número máximo de iterações da bisseção) */
@@ -72,9 +80,10 @@ cbs_result_t itp_search(
 
         /* Avaliar f no ponto ITP */
         double y_itp = f(x_itp, params) - T;
+        if (negate) y_itp = -y_itp;
         result.f_evals++;
 
-        double error = fabs(y_itp);
+        double error = fabs(negate ? -y_itp : y_itp);  /* error em termos de f-T original */
 
         /* Registrar histórico */
         if (history) {
