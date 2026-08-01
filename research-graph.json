@@ -116,9 +116,87 @@
         "Waeber (2013). Probabilistic Bisection Search. PhD Thesis, Cornell."
       ],
       "tags": ["experiment", "implementation", "benchmark", "c-language", "itp", "hybrid", "results"]
+    },
+    {
+      "id": "cbs-cutting-plane",
+      "type": "theorem",
+      "title": "CBS-1D como Caso Especial do Cutting Plane Method",
+      "description": "Formalização rigorosa mostrando que o CBS-1D é a degenerescência unidimensional do cutting plane method com medida ponderada. Inclui: isomorfismo estrutural (Thm 3.1), bisseção como caso especial (Thm 4.1), convergência superlinear do CBS adaptativo (Thm 5.2), generalização CBS-nD (Thm 6.4/7.1), e comparação formal com o método do elipsóide.",
+      "directory": "explorations/continuous-binary-search",
+      "created": "2026-08-01",
+      "status": "active",
+      "results": [
+        "CBS-1D = cutting plane com μ_w em R^1, mediana como centro ótimo (Thm 3.1)",
+        "Bisseção clássica = CBS com w=constante = cutting plane com Lebesgue em R^1 (Thm 4.1)",
+        "CBS-1D atinge ρ=1/2 por iteração (melhor que bound geral e^{-1/(2(n+1))} do elipsóide)",
+        "Em 1D, elipsóide/cutting-plane/CBS colapsam para o mesmo algoritmo (Prop 4.4)",
+        "CBS com w=1/(|f-T|+δ) dá convergência superlinear em comprimento (Thm 5.2)",
+        "Generalização CBS-nD: corte por hiperplano ∇f no centróide ponderado, taxa ≤ 1-1/(n+1) (Thm 6.4)",
+        "Convergência completa CBS-nD: O(n² ln(1/ε)) iterações sob convexidade (Thm 7.1)",
+        "Vantagem do CBS-nD sobre Lebesgue: centróide ponderado está mais perto de x* (Prop 8.2)"
+      ],
+      "scripts": [],
+      "references": [
+        "Grünbaum, B. (1960). Partitions of mass-distributions and of convex bodies by hyperplanes.",
+        "Khachiyan, L. (1979). A polynomial algorithm in linear programming.",
+        "Nemirovski & Yudin (1983). Problem Complexity and Method Efficiency in Optimization.",
+        "Vaidya, P. (1996). A new algorithm for minimizing convex functions over convex sets.",
+        "Bubeck, S. (2015). Convex Optimization: Algorithms and Complexity."
+      ],
+      "tags": ["cutting-plane", "ellipsoid-method", "CBS", "convergence", "formalization", "n-dimensional"]
+    },
+    {
+      "id": "cbs-nd-algorithm",
+      "type": "exploration",
+      "title": "CBS-nD: Design do Algoritmo para Funções Convexas",
+      "description": "Design completo do algoritmo CBS-nD para busca de nível f(x*)=T em R^n com f convexa black-box. Três variantes: CBS-Elipsóide (Löwner-John update), CBS-Box (corte coordenada-a-coordenada), CBS-Simplex (corte pelo centróide). Inclui pseudocódigo, API em C, análise de complexidade, e detecção de convexidade on-the-fly.",
+      "directory": "explorations/continuous-binary-search",
+      "created": "2026-08-01",
+      "status": "active",
+      "results": [
+        "CBS-Box recomendada para primeira implementação (simplicidade, sem deps, O(n²log(R/ε)) evals)",
+        "CBS-Elipsóide: O(n³ln(R/ε)) evals, update O(n²)/iter, melhor para n grande",
+        "CBS-Simplex: bound de Grünbaum automático mas degeneração prática",
+        "Gradiente por diferenças centrais: 2n evals/iter, h=ε^(1/3)",
+        "Detecção de convexidade via teste de Jensen (probabilístico) e Hessiana amostrada",
+        "API C completa desenhada: func_nd_t, cbs_nd_config_t, cbs_nd_result_t",
+        "Plano de implementação em 3 fases: Box → Elipsóide → Simplex"
+      ],
+      "scripts": [],
+      "references": [
+        "Grünbaum, B. (1960). Partitions of mass-distributions by hyperplanes.",
+        "Khachiyan, L. (1979). A polynomial algorithm in linear programming.",
+        "Nemirovski & Yudin (1983). Problem Complexity and Method Efficiency.",
+        "Boyd & Vandenberghe (2004). Convex Optimization."
+      ],
+      "tags": ["cbs-nd", "algorithm-design", "convex", "cutting-plane", "ellipsoid", "box", "simplex", "c-api"]
     }
   ],
   "edges": [
+    {
+      "from": "continuous-binary-search",
+      "to": "cbs-cutting-plane",
+      "relation": "leads_to",
+      "description": "A teoria do CBS-1D leva naturalmente à conexão formal com cutting plane methods"
+    },
+    {
+      "from": "median-as-pivot",
+      "to": "cbs-cutting-plane",
+      "relation": "supports",
+      "description": "O resultado de otimalidade da mediana fundamenta a identificação com o centro ótimo do cutting plane"
+    },
+    {
+      "from": "experiment-cbs",
+      "to": "cbs-cutting-plane",
+      "relation": "supports",
+      "description": "Resultados experimentais (convergência superlinear em casos flat) validam a teoria de concentração adaptativa"
+    },
+    {
+      "from": "cbs-cutting-plane",
+      "to": "root",
+      "relation": "generalizes",
+      "description": "O framework CBS-nD generaliza para busca em espaços de alta dimensão, potencialmente aplicável a problemas NP"
+    },
     {
       "from": "root",
       "to": "continuous-binary-search",
@@ -148,13 +226,31 @@
       "to": "experiment-cbs",
       "relation": "supports",
       "description": "Resultado teórico a ser validado experimentalmente"
+    },
+    {
+      "from": "cbs-cutting-plane",
+      "to": "cbs-nd-algorithm",
+      "relation": "leads_to",
+      "description": "Formalização teórica (Thm 6.4/7.1) fornece base para design prático do algoritmo CBS-nD"
+    },
+    {
+      "from": "experiment-cbs",
+      "to": "cbs-nd-algorithm",
+      "relation": "supports",
+      "description": "Experiência com implementação 1D em C informa escolhas de API e arquitetura para versão nD"
+    },
+    {
+      "from": "cbs-nd-algorithm",
+      "to": "root",
+      "relation": "generalizes",
+      "description": "CBS-nD estende a busca para espaços de alta dimensão — potencial para atacar problemas NP relaxados"
     }
   ],
   "paths": [
     {
       "id": "path-continuous-binary-search",
       "name": "Busca Binária Contínua: Da Teoria ao Experimento",
-      "nodes": ["root", "continuous-binary-search", "median-as-pivot", "monotonicity-classification", "experiment-cbs"],
+      "nodes": ["root", "continuous-binary-search", "median-as-pivot", "monotonicity-classification", "experiment-cbs", "cbs-cutting-plane", "cbs-nd-algorithm"],
       "status": "active"
     }
   ]
