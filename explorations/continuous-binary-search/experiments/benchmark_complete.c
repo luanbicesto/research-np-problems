@@ -203,7 +203,96 @@ int main(void)
         .x_exact = NAN
     };
 
-    test_case_t tests[] = {t1, t2, t3, t4, t5, t6, t7, t8, t9, t10};
+    /* --- Teste 11: Intervalo grande [-500,500], cúbica --- */
+    /* f(x) = x³ - 3x, T = 1000000 (1 milhão) */
+    /* Solução: x³ ≈ 1e6 → x ≈ 100 */
+    test_case_t t11 = {
+        .name = "x^3-3x T=1000000 [-500,500]",
+        .f = fn_cubic_nonmono, .params = NULL,
+        .T = 1000000.0, .a = -500.0, .b = 500.0,
+        .x_exact = NAN
+    };
+
+    /* --- Teste 12: Intervalo grande, T = 5 milhões --- */
+    /* f(x) = x³ - 3x, T = 5000000 */
+    /* Solução: x ≈ cbrt(5e6) ≈ 170.99 */
+    test_case_t t12 = {
+        .name = "x^3-3x T=5000000 [-500,500]",
+        .f = fn_cubic_nonmono, .params = NULL,
+        .T = 5000000.0, .a = -500.0, .b = 500.0,
+        .x_exact = NAN
+    };
+
+    /* --- Teste 13: Intervalo grande, T negativo grande --- */
+    /* f(x) = x³ - 3x, T = -2000000 */
+    test_case_t t13 = {
+        .name = "x^3-3x T=-2000000 [-500,500]",
+        .f = fn_cubic_nonmono, .params = NULL,
+        .T = -2000000.0, .a = -500.0, .b = 500.0,
+        .x_exact = NAN
+    };
+
+    /* --- Teste 14: Polinômio de grau alto, intervalo grande --- */
+    /* f(x) = x^5 / 1000 (monótona, valores enormes) */
+    /* T = 3125000 → x^5 = 3.125e9 → x ≈ 500*... não, x^5/1000=3125000 → x^5=3.125e9 → x≈315.9 */
+    /* Usar cúbica que é mais manejável */
+
+    /* --- Teste 14: Parábola em intervalo grande --- */
+    /* f(x) = -(x-100)^2 + 2000000, max em x=100 (f(100)=2e6) */
+    /* T = 1500000 → -(x-100)^2 = -500000 → x = 100 ± √500000 ≈ 100 ± 707 */
+    /* Em [-500,500]: solução esquerda = 100 - 707 = -607 (fora!), direita = 100+707=807 (fora!) */
+    /* Ajustar: T = 1999000 → -(x-100)^2 = -1000 → x = 100 ± √1000 ≈ 100 ± 31.6 */
+    parabola_params_t p2 = {.c = 100.0, .h = 2000000.0};
+    test_case_t t14 = {
+        .name = "-(x-100)^2+2e6 T=1999000 [-500,500]",
+        .f = fn_parabola, .params = &p2,
+        .T = 1999000.0, .a = -500.0, .b = 500.0,
+        .x_exact = NAN  /* 100 - √1000 ≈ 68.38 ou 100 + √1000 ≈ 131.62 */
+    };
+
+    /* --- Teste 15: Parábola, T baixo (solução longe do pico) --- */
+    /* T = 1000000 → -(x-100)^2 = -1000000 → x = 100 ± 1000 */
+    /* Em [-500,500]: solução esquerda = -900 (fora), direita = 1100 (fora) */
+    /* T = 1750000 → -(x-100)^2 = -250000 → x = 100 ± 500 → x=-400 ou x=600 */
+    /* x=-400 está em [-500, 500]! */
+    test_case_t t15 = {
+        .name = "-(x-100)^2+2e6 T=1750000 [-500,500]",
+        .f = fn_parabola, .params = &p2,
+        .T = 1750000.0, .a = -500.0, .b = 500.0,
+        .x_exact = NAN  /* 100 - 500 = -400 ou 100 + 500 = 600 (fora) → x=-400 */
+    };
+
+    /* --- Teste 16: Gaussiana escalada (amplitude > 1 milhão) --- */
+    /* f(x) = 2000000 * exp(-x²/200), max em x=0 (f(0)=2e6) */
+    /* T = 1000000 → exp(-x²/200) = 0.5 → x² = 200*ln(2) → x ≈ ±11.77 */
+    narrow_gaussian_params_t g_big = {.mu = 0.0, .sigma = 10.0, .amplitude = 2000000.0};
+    test_case_t t16 = {
+        .name = "2e6*Gauss(0,10) T=1e6 [-500,500]",
+        .f = fn_narrow_gaussian, .params = &g_big,
+        .T = 1000000.0, .a = -500.0, .b = 500.0,
+        .x_exact = NAN  /* ±10*√(2*ln2) ≈ ±11.77 */
+    };
+
+    /* --- Teste 17: Gaussiana escalada, T alto (perto do pico) --- */
+    /* T = 1900000 → exp(-x²/200) = 0.95 → x² = 200*ln(1/0.95) → x ≈ ±3.2 */
+    test_case_t t17 = {
+        .name = "2e6*Gauss(0,10) T=1.9e6 [-500,500]",
+        .f = fn_narrow_gaussian, .params = &g_big,
+        .T = 1900000.0, .a = -500.0, .b = 500.0,
+        .x_exact = NAN
+    };
+
+    /* --- Teste 18: sin em intervalo grande --- */
+    /* f(x) = sin(x), T=0.5 em [-500, 500] — centenas de soluções */
+    test_case_t t18 = {
+        .name = "sin(x) T=0.5 [-500,500]",
+        .f = fn_sin, .params = NULL,
+        .T = 0.5, .a = -500.0, .b = 500.0,
+        .x_exact = NAN
+    };
+
+    test_case_t tests[] = {t1, t2, t3, t4, t5, t6, t7, t8, t9, t10,
+                           t11, t12, t13, t14, t15, t16, t17, t18};
     int n_tests = sizeof(tests) / sizeof(tests[0]);
 
     printf("Executando %d testes com funções não-monótonas...\n\n", n_tests);
