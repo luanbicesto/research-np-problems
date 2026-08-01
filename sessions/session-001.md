@@ -30,11 +30,13 @@ Sessão inicial explorando a ideia de generalizar busca binária discreta para o
 ## Decisões
 
 1. Documentar teoria completa → `theory.md` ✅
-2. Próximo passo: implementação em Python + benchmarks
-3. Plano de experimentos definido → `experiments/PLAN.md` ✅
+2. Implementação em C com benchmarks → ✅
+3. Comparação com estado da arte (ITP) → ✅
+4. Método híbrido CBS+ITP → ✅
 
 ## Questões em aberto
 
-- Como a dificuldade de computar o pivô ótimo (mediana de distribuição implícita) se conecta com classes de complexidade?
+- O híbrido CBS+ITP justifica-se em aplicações reais? (batch evaluation, GPU)
+- Como a fase CBS se comporta em dimensão > 1?
+- Existe conexão formal entre a dificuldade de computar o pivô ótimo e classes PP/#P?
 - Em espaços discretos/combinatórios, a "seleção de ramo" corresponde a quê?
-- Existe analogia com particionamento de espaço de soluções em problemas NP?

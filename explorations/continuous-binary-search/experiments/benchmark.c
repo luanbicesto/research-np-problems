@@ -15,6 +15,8 @@
 
 #include "cbs_algorithm.h"
 #include "test_functions.h"
+#include "itp_method.h"
+#include "cbs_itp.h"
 
 #define EPS         1e-10
 #define MAX_ITER    200
@@ -58,10 +60,30 @@ static void run_test(test_case_t *tc, FILE *csv_summary, FILE *csv_history)
         PIVOT_MEDIAN_INV, hist_inv
     );
 
+    /* Executar com ITP (estado da arte) */
+    cbs_history_t *hist_itp = cbs_history_create(MAX_ITER);
+    cbs_result_t res_itp = itp_search(
+        tc->f, tc->params, tc->T,
+        tc->a, tc->b, EPS,
+        0.1, 2.0, 1,  /* kappa1, kappa2, n0 padrão */
+        hist_itp
+    );
+
+    /* Executar com CBS+ITP (híbrido) */
+    cbs_history_t *hist_hybrid = cbs_history_create(MAX_ITER);
+    cbs_itp_params_t hp = CBS_ITP_DEFAULT;
+    cbs_result_t res_hybrid = cbs_itp_search(
+        tc->f, tc->params, tc->T,
+        tc->a, tc->b, EPS,
+        &hp, hist_hybrid
+    );
+
     /* Erro em relação à solução exata (se conhecida) */
     double err_exact_mid = isnan(tc->x_exact) ? -1.0 : fabs(res_mid.x_star - tc->x_exact);
     double err_exact_med = isnan(tc->x_exact) ? -1.0 : fabs(res_med.x_star - tc->x_exact);
     double err_exact_inv = isnan(tc->x_exact) ? -1.0 : fabs(res_inv.x_star - tc->x_exact);
+    double err_exact_itp = isnan(tc->x_exact) ? -1.0 : fabs(res_itp.x_star - tc->x_exact);
+    double err_exact_hyb = isnan(tc->x_exact) ? -1.0 : fabs(res_hybrid.x_star - tc->x_exact);
 
     /* Imprimir resumo */
     printf("    Midpoint:   x*=%.10f  iters=%3d  evals=%5d  err=%.2e",
@@ -69,26 +91,34 @@ static void run_test(test_case_t *tc, FILE *csv_summary, FILE *csv_history)
     if (err_exact_mid >= 0) printf("  |x*-exact|=%.2e", err_exact_mid);
     printf("\n");
 
-    printf("    Median|f|:  x*=%.10f  iters=%3d  evals=%5d  err=%.2e",
-           res_med.x_star, res_med.iterations, res_med.f_evals, res_med.error);
-    if (err_exact_med >= 0) printf("  |x*-exact|=%.2e", err_exact_med);
-    printf("\n");
-
     printf("    Median1/d:  x*=%.10f  iters=%3d  evals=%5d  err=%.2e",
            res_inv.x_star, res_inv.iterations, res_inv.f_evals, res_inv.error);
     if (err_exact_inv >= 0) printf("  |x*-exact|=%.2e", err_exact_inv);
+    printf("\n");
+
+    printf("    ITP:        x*=%.10f  iters=%3d  evals=%5d  err=%.2e",
+           res_itp.x_star, res_itp.iterations, res_itp.f_evals, res_itp.error);
+    if (err_exact_itp >= 0) printf("  |x*-exact|=%.2e", err_exact_itp);
+    printf("\n");
+
+    printf("    CBS+ITP:    x*=%.10f  iters=%3d  evals=%5d  err=%.2e",
+           res_hybrid.x_star, res_hybrid.iterations, res_hybrid.f_evals, res_hybrid.error);
+    if (err_exact_hyb >= 0) printf("  |x*-exact|=%.2e", err_exact_hyb);
     printf("\n\n");
 
     /* Escrever resumo no CSV */
     fprintf(csv_summary, "%s,midpoint,%.15e,%d,%d,%.15e,%.15e\n",
             tc->name, res_mid.x_star, res_mid.iterations, res_mid.f_evals,
             res_mid.error, err_exact_mid);
-    fprintf(csv_summary, "%s,median_f,%.15e,%d,%d,%.15e,%.15e\n",
-            tc->name, res_med.x_star, res_med.iterations, res_med.f_evals,
-            res_med.error, err_exact_med);
     fprintf(csv_summary, "%s,median_inv,%.15e,%d,%d,%.15e,%.15e\n",
             tc->name, res_inv.x_star, res_inv.iterations, res_inv.f_evals,
             res_inv.error, err_exact_inv);
+    fprintf(csv_summary, "%s,itp,%.15e,%d,%d,%.15e,%.15e\n",
+            tc->name, res_itp.x_star, res_itp.iterations, res_itp.f_evals,
+            res_itp.error, err_exact_itp);
+    fprintf(csv_summary, "%s,cbs_itp,%.15e,%d,%d,%.15e,%.15e\n",
+            tc->name, res_hybrid.x_star, res_hybrid.iterations, res_hybrid.f_evals,
+            res_hybrid.error, err_exact_hyb);
 
     /* Escrever históricos no CSV */
     for (int i = 0; i < hist_mid->count; i++) {
@@ -96,20 +126,27 @@ static void run_test(test_case_t *tc, FILE *csv_summary, FILE *csv_history)
         fprintf(csv_history, "%s,midpoint,%d,%.15e,%.15e,%.15e,%.15e,%.15e,%.15e\n",
                 tc->name, i + 1, e->a, e->b, e->pivot, e->f_pivot, e->error, e->interval_width);
     }
-    for (int i = 0; i < hist_med->count; i++) {
-        cbs_iteration_t *e = &hist_med->entries[i];
-        fprintf(csv_history, "%s,median_f,%d,%.15e,%.15e,%.15e,%.15e,%.15e,%.15e\n",
-                tc->name, i + 1, e->a, e->b, e->pivot, e->f_pivot, e->error, e->interval_width);
-    }
     for (int i = 0; i < hist_inv->count; i++) {
         cbs_iteration_t *e = &hist_inv->entries[i];
         fprintf(csv_history, "%s,median_inv,%d,%.15e,%.15e,%.15e,%.15e,%.15e,%.15e\n",
+                tc->name, i + 1, e->a, e->b, e->pivot, e->f_pivot, e->error, e->interval_width);
+    }
+    for (int i = 0; i < hist_itp->count; i++) {
+        cbs_iteration_t *e = &hist_itp->entries[i];
+        fprintf(csv_history, "%s,itp,%d,%.15e,%.15e,%.15e,%.15e,%.15e,%.15e\n",
+                tc->name, i + 1, e->a, e->b, e->pivot, e->f_pivot, e->error, e->interval_width);
+    }
+    for (int i = 0; i < hist_hybrid->count; i++) {
+        cbs_iteration_t *e = &hist_hybrid->entries[i];
+        fprintf(csv_history, "%s,cbs_itp,%d,%.15e,%.15e,%.15e,%.15e,%.15e,%.15e\n",
                 tc->name, i + 1, e->a, e->b, e->pivot, e->f_pivot, e->error, e->interval_width);
     }
 
     cbs_history_free(hist_mid);
     cbs_history_free(hist_med);
     cbs_history_free(hist_inv);
+    cbs_history_free(hist_itp);
+    cbs_history_free(hist_hybrid);
 }
 
 /* --- Main --- */
@@ -117,7 +154,7 @@ int main(void)
 {
     printf("==========================================================\n");
     printf("  BUSCA BINÁRIA CONTÍNUA - BENCHMARK\n");
-    printf("  Comparação: Midpoint vs Median|f| vs Median(1/|f-T|)\n");
+    printf("  Comparação: Midpoint vs Median|f| vs Median(1/|f-T|) vs ITP\n");
     printf("  Precisão: eps = %.0e | Max iter: %d\n", EPS, MAX_ITER);
     printf("==========================================================\n\n");
 

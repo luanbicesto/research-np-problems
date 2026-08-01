@@ -93,20 +93,29 @@
       "id": "experiment-cbs",
       "type": "experiment",
       "title": "Experimento: Implementação e Benchmarks da Busca Binária Contínua",
-      "description": "Implementação em C com 3 métodos de pivô (midpoint, median|f|, median 1/|f-T|). Benchmark com 10 funções de teste. Resultado principal: median 1/|f-T| converge em ~3x menos iterações que midpoint.",
+      "description": "Implementação em C com 4 métodos: midpoint, median|f|, median 1/|f-T|, ITP, e híbrido CBS+ITP. Benchmark com 10 funções. CBS+ITP combina varredura global (localização) com ITP (convergência superlinear).",
       "directory": "explorations/continuous-binary-search/experiments",
       "created": "2026-08-01",
       "status": "active",
       "results": [
-        "Median 1/|f-T| converge em ~9 iterações vs ~31 do midpoint (3.4x melhor)",
-        "Median |f| não melhora (prior incorreto para inversão)",
-        "Trade-off: menos iterações mas mais avaliações por iteração (65 evals/iter)",
-        "Custo total: midpoint ~33 evals, median 1/|f-T| ~609 evals",
-        "Teoria confirmada: peso correto = prior sobre localização de x*"
+        "ITP é estado da arte em evals totais (12-15 evals, superlinear)",
+        "CBS+ITP vence em iterações: 7-10 vs 9-35 do ITP para funções difíceis",
+        "CBS+ITP resolve Cubic T=0.001 em 10 iters vs 35 do ITP (3.5x melhor)",
+        "Fase CBS (varredura 1/|f-T|) localiza solução globalmente em 3 iters",
+        "Trade-off: CBS+ITP gasta ~140 evals vs ~12 do ITP puro",
+        "Nicho do CBS+ITP: funções flat, derivada pequena, soluções em extremos"
       ],
-      "scripts": ["explorations/continuous-binary-search/experiments/benchmark.c"],
-      "references": [],
-      "tags": ["experiment", "implementation", "benchmark", "c-language", "results"]
+      "scripts": [
+        "explorations/continuous-binary-search/experiments/benchmark.c",
+        "explorations/continuous-binary-search/experiments/cbs_itp.c",
+        "explorations/continuous-binary-search/experiments/itp_method.c"
+      ],
+      "references": [
+        "Oliveira & Takahashi (2021). An Enhancement of the Bisection Method. ACM TOMS.",
+        "Horstein (1963). Sequential transmission using noiseless feedback. IEEE.",
+        "Waeber (2013). Probabilistic Bisection Search. PhD Thesis, Cornell."
+      ],
+      "tags": ["experiment", "implementation", "benchmark", "c-language", "itp", "hybrid", "results"]
     }
   ],
   "edges": [
