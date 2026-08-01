@@ -170,6 +170,36 @@
         "Boyd & Vandenberghe (2004). Convex Optimization."
       ],
       "tags": ["cbs-nd", "algorithm-design", "convex", "cutting-plane", "ellipsoid", "box", "simplex", "c-api"]
+    },
+    {
+      "id": "cbs-nd-generalization",
+      "type": "exploration",
+      "title": "CBS-nD: Generalização para R^n e Conexão com Complexidade",
+      "description": "Generalização do CBS para f: R^n → R. Formalização de CBS como caso especial do método do elipsóide (biseção volumétrica). Implementação da variante CBS-Box com corte coordenada-a-coordenada. Resultado: converge em O(n² log(R/ε)) para funções convexas, falha para não-convexas (Rosenbrock). Conexão com P vs NP via modelo BSS: convexidade ↔ 2-SAT (tratável), grau ≥ 4 ↔ 3-SAT (NP_R-completo).",
+      "directory": "explorations/continuous-binary-search/experiments_nd",
+      "created": "2026-08-01",
+      "status": "active",
+      "results": [
+        "CBS-1D é degenerescência 1D do cutting plane method (taxa ρ=1/2)",
+        "CBS-nD Box converge em O(n² log(R/ε)) para f convexa",
+        "Iterações ≈ 27-31 independente de n (apenas evals/iter cresce com n)",
+        "29/32 benchmarks passam: todas convexas OK, Rosenbrock (não-convexa) falha",
+        "CBS domina Gradient Descent em 7/8 funções (n=10)",
+        "Maldição da dimensionalidade: Θ((L/ε)^n) para Lipschitz geral, O(n² log) para convexa",
+        "Analogia BSS: convexidade está para level-sets como 2-SAT está para SAT"
+      ],
+      "scripts": [
+        "explorations/continuous-binary-search/experiments_nd/cbs_nd.c",
+        "explorations/continuous-binary-search/experiments_nd/benchmark_nd.c"
+      ],
+      "references": [
+        "Grünbaum, B. (1960). Partitions of mass-distributions by hyperplanes.",
+        "Khachiyan, L. (1979). A polynomial algorithm in linear programming.",
+        "Nemirovsky & Yudin (1983). Problem Complexity and Method Efficiency.",
+        "Blum, Shub & Smale (1989). Computation over the real numbers.",
+        "Sikorski, K. (2001). Optimal Solution of Nonlinear Equations."
+      ],
+      "tags": ["n-dimensional", "cutting-plane", "ellipsoid", "convexity", "curse-of-dimensionality", "bss-model", "p-vs-np"]
     }
   ],
   "edges": [
@@ -244,13 +274,19 @@
       "to": "root",
       "relation": "generalizes",
       "description": "CBS-nD estende a busca para espaços de alta dimensão — potencial para atacar problemas NP relaxados"
+    },
+    {
+      "from": "cbs-nd-algorithm",
+      "to": "cbs-nd-generalization",
+      "relation": "leads_to",
+      "description": "Design do algoritmo → implementação e benchmark experimental"
     }
   ],
   "paths": [
     {
       "id": "path-continuous-binary-search",
-      "name": "Busca Binária Contínua: Da Teoria ao Experimento",
-      "nodes": ["root", "continuous-binary-search", "median-as-pivot", "monotonicity-classification", "experiment-cbs", "cbs-cutting-plane", "cbs-nd-algorithm"],
+      "name": "Busca Binária Contínua: Da Teoria ao Experimento e Generalização nD",
+      "nodes": ["root", "continuous-binary-search", "median-as-pivot", "monotonicity-classification", "experiment-cbs", "cbs-cutting-plane", "cbs-nd-algorithm", "cbs-nd-generalization"],
       "status": "active"
     }
   ]
