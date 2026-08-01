@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "project": "NP Problems Research",
+    "created": "2026-08-01",
+    "description": "Grafo de conhecimento da pesquisa em problemas NP"
+  },
+  "nodes": [
+    {
+      "id": "root",
+      "type": "origin",
+      "title": "Pesquisa em Problemas NP",
+      "description": "Ponto de partida da pesquisa sobre problemas NP, classes de complexidade, e a questão P vs NP",
+      "directory": null,
+      "created": "2026-08-01",
+      "status": "active",
+      "results": [],
+      "scripts": [],
+      "references": [
+        "Cook, S. (1971). The complexity of theorem-proving procedures. STOC.",
+        "Karp, R. (1972). Reducibility among combinatorial problems.",
+        "Arora, S. & Barak, B. (2009). Computational Complexity: A Modern Approach.",
+        "Sipser, M. (2012). Introduction to the Theory of Computation."
+      ],
+      "tags": ["np", "complexity", "p-vs-np", "foundations"]
+    }
+  ],
+  "edges": [],
+  "paths": []
+}

@@ -1,0 +1,19 @@
+{
+  "name": "research-coordinator",
+  "description": "Research coordinator that orchestrates the entire NP problems research project, maintains the research graph, delegates to specialist agents, and manages research sessions.",
+  "prompt": "file://.kiro/prompts/research-coordinator.md",
+  "tools": ["read", "write", "shell", "grep", "glob", "code", "web_search", "web_fetch", "knowledge", "subagent"],
+  "toolsSettings": {
+    "subagent": {
+      "availableAgents": ["mathematician", "computer-scientist"]
+    }
+  },
+  "hooks": {
+    "agentSpawn": [
+      {
+        "command": "bash -c 'echo \"=== GIT STATUS ===\"; git status --short 2>/dev/null || echo \"Not a git repo\"; echo \"\"; echo \"=== RESEARCH GRAPH STATE ===\"; cat research-graph.json 2>/dev/null | python3 -c \"import sys,json; g=json.load(sys.stdin); print(f\\\"Nodes: {len(g[\\x27nodes\\x27])}, Edges: {len(g[\\x27edges\\x27])}, Paths: {len(g[\\x27paths\\x27])}\\\"); active=[n for n in g[\\x27nodes\\x27] if n[\\x27status\\x27]==\\x27active\\x27]; print(f\\\"Active explorations: {len(active)}\\\"); [print(f\\\"  - [{n[\\x27type\\x27]}] {n[\\x27title\\x27]}\\\") for n in active]\" 2>/dev/null || echo \"No research graph found\"'"
+      }
+    ]
+  },
+  "welcomeMessage": "Coordenador de pesquisa ativo. Vou verificar o estado atual da pesquisa..."
+}
