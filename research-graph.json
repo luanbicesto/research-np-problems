@@ -22,8 +22,125 @@
         "Sipser, M. (2012). Introduction to the Theory of Computation."
       ],
       "tags": ["np", "complexity", "p-vs-np", "foundations"]
+    },
+    {
+      "id": "continuous-binary-search",
+      "type": "exploration",
+      "title": "Busca Binária Contínua com Pivô pela Mediana",
+      "description": "Generalização da busca binária discreta para funções contínuas f: [a,b] → R. Investiga o pivô ótimo (mediana da distribuição de incerteza), condições de monotonicidade, e seleção de ramo para funções não-monótonas.",
+      "directory": "explorations/continuous-binary-search",
+      "created": "2026-08-01",
+      "status": "active",
+      "results": [
+        "Pivô pela mediana é informacionalmente ótimo (1 bit/query)",
+        "Para prior uniforme, mediana = ponto médio (bisseção clássica)",
+        "Restrição a ramo monótono é necessária e suficiente para f não-monótona",
+        "Não existe transformação global que induza monotonicidade preservando raízes",
+        "Algoritmo funciona para toda f ∈ C¹ com f'(x*) ≠ 0 (Classe A)",
+        "Falha para funções contínuas sem monotonicidade local (Weierstrass, Classe C)"
+      ],
+      "scripts": [],
+      "references": [
+        "Brent, R. (1973). Algorithms for Minimization without Derivatives.",
+        "Knuth, D. (1971). Optimum binary search trees. Acta Informatica.",
+        "Shannon, C. (1948). A Mathematical Theory of Communication.",
+        "Banach, S. & Mazurkiewicz, S. (1931). Sur les fonctions non-dérivables."
+      ],
+      "tags": ["binary-search", "continuous", "median", "pivot", "monotonicity", "information-theory"]
+    },
+    {
+      "id": "median-as-pivot",
+      "type": "theorem",
+      "title": "Mediana como Pivô Ótimo",
+      "description": "O pivô que maximiza a informação ganha por avaliação é a mediana da distribuição de incerteza sobre a localização de x*. Extrai exatamente 1 bit de informação por query (máximo possível para decisão binária).",
+      "directory": "explorations/continuous-binary-search",
+      "created": "2026-08-01",
+      "status": "completed",
+      "results": [
+        "Entropia binária H(p) maximizada em p=1/2 ⟹ pivô = mediana",
+        "Equivalente a árvore de busca ótima ponderada (Knuth 1971) no contínuo",
+        "Prior uniforme ⟹ mediana = ponto médio ⟹ bisseção clássica é caso especial"
+      ],
+      "scripts": [],
+      "references": [
+        "Shannon, C. (1948). A Mathematical Theory of Communication.",
+        "Knuth, D. (1971). Optimum binary search trees."
+      ],
+      "tags": ["median", "information-theory", "optimality", "entropy"]
+    },
+    {
+      "id": "monotonicity-classification",
+      "type": "theorem",
+      "title": "Classificação de Funções por Monotonicidade Local",
+      "description": "Classificação em Classe A (f'(x*)≠0, monótona localmente), Classe B (extremo, muda para otimização), Classe C (Weierstrass, nunca monótona). Banach-Mazurkiewicz: genericamente C[0,1] é Classe C, mas na prática computacional estamos em Classe A.",
+      "directory": "explorations/continuous-binary-search",
+      "created": "2026-08-01",
+      "status": "completed",
+      "results": [
+        "Classe A: f ∈ C¹ com f'(x*)≠0 → algoritmo funciona",
+        "Classe B: extremos → problema vira otimização",
+        "Classe C: Weierstrass → falha completa",
+        "Funções computáveis/analíticas são sempre Classe A na prática"
+      ],
+      "scripts": [],
+      "references": [
+        "Banach, S. & Mazurkiewicz, S. (1931). Sur les fonctions non-dérivables.",
+        "Weierstrass, K. (1872). Über continuirliche Functionen."
+      ],
+      "tags": ["monotonicity", "classification", "weierstrass", "differentiability"]
+    },
+    {
+      "id": "experiment-cbs",
+      "type": "experiment",
+      "title": "Experimento: Implementação e Benchmarks da Busca Binária Contínua",
+      "description": "Implementar o algoritmo em Python, testar com diferentes funções (Gaussiana, polinômios, oscilatórias), comparar pivô por ponto médio vs mediana, medir convergência e gerar visualizações.",
+      "directory": "explorations/continuous-binary-search/experiments",
+      "created": "2026-08-01",
+      "status": "active",
+      "results": [],
+      "scripts": [],
+      "references": [],
+      "tags": ["experiment", "implementation", "benchmark", "visualization"]
     }
   ],
-  "edges": [],
-  "paths": []
+  "edges": [
+    {
+      "from": "root",
+      "to": "continuous-binary-search",
+      "relation": "leads_to",
+      "description": "Exploração de busca binária no contínuo como ferramenta para investigar espaços de busca em problemas NP"
+    },
+    {
+      "from": "continuous-binary-search",
+      "to": "median-as-pivot",
+      "relation": "leads_to",
+      "description": "A análise do pivô ótimo leva ao resultado de que a mediana maximiza informação"
+    },
+    {
+      "from": "continuous-binary-search",
+      "to": "monotonicity-classification",
+      "relation": "leads_to",
+      "description": "Necessidade de monotonicidade leva à classificação de funções"
+    },
+    {
+      "from": "continuous-binary-search",
+      "to": "experiment-cbs",
+      "relation": "leads_to",
+      "description": "Teoria fundamentada, próximo passo é validação experimental"
+    },
+    {
+      "from": "median-as-pivot",
+      "to": "experiment-cbs",
+      "relation": "supports",
+      "description": "Resultado teórico a ser validado experimentalmente"
+    }
+  ],
+  "paths": [
+    {
+      "id": "path-continuous-binary-search",
+      "name": "Busca Binária Contínua: Da Teoria ao Experimento",
+      "nodes": ["root", "continuous-binary-search", "median-as-pivot", "monotonicity-classification", "experiment-cbs"],
+      "status": "active"
+    }
+  ]
 }
