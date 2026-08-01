@@ -93,14 +93,20 @@
       "id": "experiment-cbs",
       "type": "experiment",
       "title": "Experimento: Implementação e Benchmarks da Busca Binária Contínua",
-      "description": "Implementar o algoritmo em Python, testar com diferentes funções (Gaussiana, polinômios, oscilatórias), comparar pivô por ponto médio vs mediana, medir convergência e gerar visualizações.",
+      "description": "Implementação em C com 3 métodos de pivô (midpoint, median|f|, median 1/|f-T|). Benchmark com 10 funções de teste. Resultado principal: median 1/|f-T| converge em ~3x menos iterações que midpoint.",
       "directory": "explorations/continuous-binary-search/experiments",
       "created": "2026-08-01",
       "status": "active",
-      "results": [],
-      "scripts": [],
+      "results": [
+        "Median 1/|f-T| converge em ~9 iterações vs ~31 do midpoint (3.4x melhor)",
+        "Median |f| não melhora (prior incorreto para inversão)",
+        "Trade-off: menos iterações mas mais avaliações por iteração (65 evals/iter)",
+        "Custo total: midpoint ~33 evals, median 1/|f-T| ~609 evals",
+        "Teoria confirmada: peso correto = prior sobre localização de x*"
+      ],
+      "scripts": ["explorations/continuous-binary-search/experiments/benchmark.c"],
       "references": [],
-      "tags": ["experiment", "implementation", "benchmark", "visualization"]
+      "tags": ["experiment", "implementation", "benchmark", "c-language", "results"]
     }
   ],
   "edges": [

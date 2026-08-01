@@ -40,3 +40,8 @@ Thumbs.db
 tmp/
 temp/
 *.tmp
+
+# Compiled objects
+*.o
+explorations/**/benchmark
+explorations/**/results_*.csv
