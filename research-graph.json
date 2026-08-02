@@ -200,6 +200,31 @@
         "Sikorski, K. (2001). Optimal Solution of Nonlinear Equations."
       ],
       "tags": ["n-dimensional", "cutting-plane", "ellipsoid", "convexity", "curse-of-dimensionality", "bss-model", "p-vs-np"]
+    },
+    {
+      "id": "majorization-difference-graph",
+      "type": "origin",
+      "title": "Grafo de Diferenças em Grupos de Soma e Majorização",
+      "description": "Nova linha de pesquisa: sequências D/E geram vetores W (partições inteiras não-crescentes) agrupados por soma. Dentro de cada grupo, constrói-se um grafo de diferenças cujos nós são pares (i,j) representando Zi-Zj. Descoberta empírica: o grafo satura rapidamente (~66 nós para C(12,4)=495 execuções), sugerindo certificado compacto O(n²) para a ordem de majorização. Conexão com funções Schur-convexas e CBS-nD: majorização = dominância por level sets de funções convexas no politopo ordenado.",
+      "directory": "explorations/majorization-graph",
+      "created": "2026-08-02",
+      "status": "active",
+      "results": [
+        "495 execuções (C(12,4)) geram 33 somas distintas, distribuição = q-binomial Gaussiano [12,4]_q",
+        "Grafo satura com ~66 nós únicos; reuso 87-97% após primeiros lotes",
+        "Universo de nós é finito e determinístico (não fenômeno emergente)",
+        "Majorização ≠ soma dos nós > 0 (necessário mas não suficiente — requer n-1 desigualdades)",
+        "Conexão: W's são partições, majorização = dominance order do Young lattice",
+        "CBS-nD pode navegar majorização via level sets de funções Schur-convexas"
+      ],
+      "scripts": [],
+      "references": [
+        "Hardy, Littlewood & Pólya (1934). Inequalities.",
+        "Marshall, Olkin & Arnold (2011). Inequalities: Theory of Majorization.",
+        "Stanley, R. (1999). Enumerative Combinatorics Vol.2.",
+        "Schur, I. (1923). Über eine Klasse von Mittelbildungen."
+      ],
+      "tags": ["majorization", "young-lattice", "schur-convex", "difference-graph", "partitions", "dominance-order", "q-binomial"]
     }
   ],
   "edges": [
@@ -280,6 +305,18 @@
       "to": "cbs-nd-generalization",
       "relation": "leads_to",
       "description": "Design do algoritmo → implementação e benchmark experimental"
+    },
+    {
+      "from": "majorization-difference-graph",
+      "to": "cbs-nd-generalization",
+      "relation": "supports",
+      "description": "Majorização = dominância por funções Schur-convexas → CBS-nD navega o politopo de partições via level sets convexos"
+    },
+    {
+      "from": "cbs-nd-generalization",
+      "to": "majorization-difference-graph",
+      "relation": "supports",
+      "description": "CBS-nD fornece algoritmo polinomial para navegar level sets de funções convexas, aplicável à ordem de majorização"
     }
   ],
   "paths": [
@@ -287,6 +324,12 @@
       "id": "path-continuous-binary-search",
       "name": "Busca Binária Contínua: Da Teoria ao Experimento e Generalização nD",
       "nodes": ["root", "continuous-binary-search", "median-as-pivot", "monotonicity-classification", "experiment-cbs", "cbs-cutting-plane", "cbs-nd-algorithm", "cbs-nd-generalization"],
+      "status": "active"
+    },
+    {
+      "id": "path-majorization-graph",
+      "name": "Grafo de Diferenças: Majorização, Partições e Funções Schur-Convexas",
+      "nodes": ["majorization-difference-graph"],
       "status": "active"
     }
   ]
